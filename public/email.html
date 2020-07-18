@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>The WeatherSafe App </title>
+    <meta charset="UTF-8">
+    
+    <meta name="google-signin-client_id" content="997136515621-ss186ta0un8qrku2ipepel41b9kvbjl4.apps.googleusercontent.com">
+    
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+    <script src="https://apis.google.com/js/platform.js" async defer></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+        
+    <!-- should I include the descriotion, keywords and author meta tags?-->
+    <style>
+        .g-signin2{
+            margin-left:500px;
+            margin-top: 200px;
+        }
+    </style>
+  
+    
+    </head>
+
+<body>
+	<p> enail page</p>
+	<div id="preference">
+		<fieldset id="pref_form" disabled="true">
+       <form  action = "http://localhost:8080/weather_post" method = "POST" >
+			
+            Select the weather condition you want to get notified for:<br>
+            <input type= "checkbox" id="rainy" name="rainy" value="Rainy"><br>
+			<label for="rainy">Rainy</label><br>
+         
+            <input type= "checkbox" id="cloudy" name="cloudy" value="Cloudy"><br>
+			<label for="cloudy">Cloudy</label><br>
+            
+            <input type= "checkbox" id="sunny" name="sunny" value="Sunny"><br>
+			<label for="sunny">Sunny</label><br>
+            
+            <input type= "checkbox" id="windy" name="windy" value="Windy"><br>
+			<label for="windy">Windy</label><br>
+            
+			<input type="submit" value="Submit">
+			</fieldset>
+		</form>
+       </div>
+    <div class="g-signin2" data-onsuccess="onSignIn"></div>
+    <a href="#" onclick="signOut();">Sign out</a>
+      <script>
+	  function getlocation() 
+		{
+			if('geolocation' in navigator)
+            {
+                console.log("geolocation is available");
+                navigator.geolocation.getCurrentPosition((position) => {
+                    const lat = position.coords.latitude;
+                    const lon = position.coords.longitude;
+                    const data = {lat, lon};
+                    console.log(data);
+                    const options = {
+                        method: 'POST',
+                        headers: {'Content-Type': 'application/json'},
+                        body: JSON.stringify(data),
+                    };
+                    fetch("http://localhost:8080/process_post", options).then(response => {console.log(response);});
+                }, error);
+            }
+           else
+           {
+                console.log("geolocation is not available");
+           }
+		}
+        function onSignIn(googleUser) {
+			var id_token = googleUser.getAuthResponse().id_token;
+			var data = {id_token};
+			var options = {
+				method :'POST',
+				headers: {
+					'Content-Type': 'application/json'
+				}, 
+				body: JSON.stringify(data)
+			};
+			fetch("http://localhost:8080/email_id", options)
+			
+			.then(response => {return response.json();})
+			.then(response =>
+			{
+				if (response.cont == "yes")
+				{
+					console.log('in');
+				    getlocation();
+					document.getElementById("pref_form").disabled = false;
+				}
+				else {
+					error(); //do a different error
+				}
+				
+			});
+
+		}
+		
+		
+		
+		function error() {
+               document.getElementById("preference").innerHTML = 'Sorry, no position available.';
+          }
+		   
+		function signOut() {
+			var auth2 = gapi.auth2.getAuthInstance();
+			auth2.signOut().then(function () {
+				console.log('User signed out.');
+			});
+		}
+		
+    </script>
+
+</body>
+
+</html>
