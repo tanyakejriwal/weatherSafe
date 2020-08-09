@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html>
+    <head>
+       <!-- <script src="/public/javascripts/login_functions.js" ></script> --> 
+       <meta name="google-signin-client_id" content="997136515621-ss186ta0un8qrku2ipepel41b9kvbjl4.apps.googleusercontent.com">
+       <script src="https://apis.google.com/js/platform.js?onload=onLoad" async defer></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    </head>
+   <body>
+    <h1>Preference Page </h1>
+       <div id="preference">
+        <fieldset id="diable" disabled>
+       <form action = "http://localhost:8080/users/form" method = "POST">
+            Select the weather condition you want to get notified for:<br>
+            <input type= "checkbox" id="rainy" name="rainy" value="Rainy"><br>
+			<label for="rainy">Rainy</label><br>
+         
+            <input type= "checkbox" id="cloudy" name="cloudy" value="Cloudy"><br>
+			<label for="cloudy">Cloudy</label><br>
+            
+            <input type= "checkbox" id="sunny" name="sunny" value="Sunny"><br>
+			<label for="sunny">Sunny</label><br>
+            
+            <input type= "checkbox" id="windy" name="windy" value="Windy"><br>
+            <label for="windy">Windy</label><br>
+            
+            <label for="notification">select the time you want to get notified at:</label>
+            <select name="notification" id="notification">
+                <option value="6">6 am</option>  <option value="7">7 am</option> <option value="8">8 am</option>
+                <option value="9">9 am</option>  <option value="10">10 am</option> <option value="11">11 am</option>
+                <option value="12">12 pm</option> <option value="13">13 pm</option> <option value="14">14 pm</option>
+                <option value="15">15 pm</option> <option value="16">16 pm</option> <option value="17">17 pm</option>
+                <option value="18">18 pm</option> <option value="19">19 pm</option> 
+            </select>            
+			<input type="submit" value="Submit">
+        </form>
+        </fieldset>
+       </div>
+       <a href="#" onclick="signOut();">Sign out</a> <!--WHY DO YOU HAVE ; AFTER SIGNOUT-->
+       
+       <script>
+           function onLoad() {
+            gapi.load('auth2', function() {
+                gapi.auth2.init();
+            });
+            }
+            function signOut() {
+                var auth2 = gapi.auth2.getAuthInstance();
+                auth2.signOut().then(function () {
+                    console.log('User signed out.');
+                });
+            }
+           function error() {
+               alert("Please enable location to access the form");
+           }
+           
+            if('geolocation' in navigator)
+            {
+                console.log("geolocation is available");
+                navigator.geolocation.getCurrentPosition((position) => {
+                    document.getElementById("diable").disabled = false; //dont diable the entire form but just the submit button
+                    //enable the submit button once all fields have value
+                    const lat = position.coords.latitude;
+                    const lon = position.coords.longitude;
+                    const data = {lat, lon};
+                    console.log(data);
+                    const options = {
+                        method: 'POST',
+                        headers: {'Content-Type': 'application/json'},
+                        body: JSON.stringify(data),
+                    };
+                    fetch("http://localhost:8080/users/location", options);
+                }, error);
+            }
+           else
+           {
+                console.log("geolocation is not available");
+           }
+       </script>
+   </body>
+</html>
