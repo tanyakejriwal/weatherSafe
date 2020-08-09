@@ -1,11 +1,39 @@
+<!--
+make the sign in button at the top
+store the info in localstorage and show thier prefs and time and stuf
+have a sign out at top
+if user already has an account, redirect them directly showing pref, do not ask them again
+package.json 
+-->
 <!DOCTYPE html>
 <html>
-<head>    
+<head>
+    <title>The WeatherSafe App </title>
+    <meta charset="UTF-8">
+    
+    <meta name="google-signin-client_id" content="997136515621-ss186ta0un8qrku2ipepel41b9kvbjl4.apps.googleusercontent.com">
+    
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+    <script src="https://apis.google.com/js/platform.js" async defer></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="javascripts/login_functions.js"></script>
+        
+    <!-- should I include the descriotion, keywords and author meta tags?-->
+    <style>
+        .g-signin2{
+            margin-left:500px;
+            margin-top: 200px;
+        }
+    </style>
+  <!-- add a loader-->
     </head>
 
 <body>
+	<p> WeatherSafe</p>
 
- <p>all done!</p>
+    <div class="g-signin2" data-onsuccess="onSignIn"></div>
+    <a href="#" onclick="signOut();">Sign out</a>
+     
 
 </body>
 
