@@ -13,7 +13,7 @@ var mongoDB = 'mongodb+srv://TanyaK:wwenadtd9@cluster0.6ymkm.azure.mongodb.net/W
 mongoose.connect(mongoDB, { useNewUrlParser: true,  useUnifiedTopology: true }); //my own change
 var db = mongoose.connection;
 db.on('error', console.error.bind(console, 'MongoDB connection error:'));
-const API_KEY = "76323adc7f83ec18404c5d6c334a9873";
+
 
 var User_Data = require("./models/user_data")
 getData();
