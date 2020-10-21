@@ -1,66 +1,57 @@
+ar createError = require('http-errors');
 var express = require('express');
+var path = require('path');
+var cookieParser = require('cookie-parser');
+var logger = require('morgan');
+const session = require('express-session');
+var cors = require('cors');
+
+var indexRouter = require('./routes/index');
+var usersRouter = require('./routes/users');
+
 var app = express();
-var bodyParser = require('body-parser');
-var urlencodedParser = bodyParser.urlencoded({extended: false});
-const {OAuth2Client} = require('google-auth-library');
+
+var mongoose = require('mongoose');
+const { use } = require('./routes/index');
+var mongoDB = 'mongodb+srv://TanyaK:wwenadtd9@cluster0.6ymkm.azure.mongodb.net/WeatherSafe?retryWrites=true&w=majority';
+mongoose.connect(mongoDB, { useNewUrlParser: true,  useUnifiedTopology: true }); //my own change
+var db = mongoose.connection;
+db.on('error', console.error.bind(console, 'MongoDB connection error:'));
+
+// view engine setup
+app.set("view engine", "pug");
+//app.use(logger('dev'));
+//app.use(cors());
+app.use(express.json());
+app.use(express.urlencoded({ extended: false }));
+//app.use(cookieParser());
+app.use(express.static(path.join(__dirname, 'public')));
+app.use(session({secret: 'needsTobeComplex', saveUninitialized: false, resave: false}));
+app.use('/', indexRouter);
+app.use('/users', usersRouter);
 
 
-app.use(express.static('public'));
-app.use(express.json({limit: '1mb'}));
-
-app.get('/index.html', function(req, res){
-	console.log("index.html");
-	res.sendFile(__dirname +"/"+"index.html");
-})
-
-app.post('/process_post', function(req, res){
-	console.log("wtf");
-	console.log(req.body);
-	const data = req.body;
-	res.json({
-		status: 'success',
-		latitude: data.lat,
-		longitude: data.lon
-	});
-	res.end()
+// catch 404 and forward to error handler
+app.use(function(req, res, next) {
+  next(createError(404));
 });
 
-app.post('/weather_post', urlencodedParser, function(request, response){
-	const data = request.body;
-	console.log(data, request.body.windy);
-	//res.sendFile(_dirname+ "/" + "homepage.html");
-	//response.sendFile(__dirname +"/public/"+ "homepage.html");
-	response.end();
-})
+// error handler
+/*
+app.use(function(err, req, res, next) {
+  // set locals, only providing error in development
+  res.locals.message = err.message;
+  res.locals.error = req.app.get('env') === 'development' ? err : {};
 
-app.post('/email_id', function(req, res){
-	var CLIENT_ID = "997136515621-ss186ta0un8qrku2ipepel41b9kvbjl4.apps.googleusercontent.com";
-	const client = new OAuth2Client(CLIENT_ID);
-	async function verify() {
-	  const ticket = await client.verifyIdToken({
-		  idToken: req.body.id_token,
-		  audience: CLIENT_ID,  // Specify the CLIENT_ID of the app that accesses the backend
-	  });
-	  const payload = ticket.getPayload();
-	  const userid = payload['sub'];
-	  // If request specified a G Suite domain:
-	  // const domain = payload['hd'];
-	  console.log(userid);
-	  console.log(payload['iss']);
-	  console.log(payload['email']);
-	}
-	verify().catch(console.error);
-	//const myurl = {url:"/index.html"}
-	//res.send(JSON.stringify(myurl));
-	//res.end();
-	//IF NO ERROR FOUND:
-	res.json({cont: "yes"});
-	
-})
-
+  // render the error page
+  res.status(err.status || 500);
+  res.render('error');
+});
+*/
+//module.exports = app;
 var server = app.listen(8080, function () {
-   var host = server.address().address
-   var port = server.address().port
-   
-   console.log("Example app listening at http://%s:%s", host, port)
+  var host = server.address().address
+  var port = server.address().port
+  
+  console.log("Example app listening at http://%s:%s", host, port)
 })
