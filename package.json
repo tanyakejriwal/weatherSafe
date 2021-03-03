@@ -19,7 +19,7 @@
     "mongoose": "^5.9.25",
     "morgan": "~1.9.1",
     "node-cron": "^2.0.3",
-    "pug": "2.0.0-beta11",
+    "pug": "3.0.1",
     "pug-cli": "^1.0.0-alpha6"
   },
   "devDependencies": {
